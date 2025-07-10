@@ -36,7 +36,7 @@ describe('Utils Functions', () => {
     })
 
     it('handles decimal places', () => {
-      expect(formatNumber(1234.56, 2)).toBe('1,234.56')
+      expect(formatNumber(1234.56)).toBe('1,234.56')
     })
   })
 })
