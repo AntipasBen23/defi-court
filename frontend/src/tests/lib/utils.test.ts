@@ -30,13 +30,17 @@ describe('Utils Functions', () => {
   })
 
   describe('formatNumber function', () => {
-    it('formats large numbers with commas', () => {
-      expect(formatNumber(1000)).toBe('1,000')
-      expect(formatNumber(1000000)).toBe('1,000,000')
+    it('formats large numbers with abbreviations', () => {
+      expect(formatNumber(1000)).toBe('1.0K')
+      expect(formatNumber(1000000)).toBe('1.0M')
     })
 
-    it('handles decimal places', () => {
-      expect(formatNumber(1234.56)).toBe('1,234.56')
+    it('handles decimal formatting', () => {
+      expect(formatNumber(1234.56)).toBe('1.2K')
+    })
+
+    it('handles small numbers', () => {
+      expect(formatNumber(123)).toBe('123')
     })
   })
 })
