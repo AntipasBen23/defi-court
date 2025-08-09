@@ -1,0 +1,49 @@
+# First, update .gitignore to be more comprehensive
+cat > .gitignore << 'EOF'
+# Dependencies
+node_modules/
+frontend/node_modules/
+*/node_modules/
+
+# Build outputs
+.next/
+frontend/.next/
+frontend/out/
+frontend/dist/
+build/
+dist/
+
+# Environment files
+.env
+.env.local
+.env.production
+.env.staging
+frontend/.env*
+
+# IDE files
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+
+# Coverage
+coverage/
+frontend/coverage/
+
+# Cache
+.cache/
+.npm/
+.eslintcache
+
+# Runtime data
+pids
+*.pid
+*.seed
+*.pid.lock
+EOF

@@ -1,0 +1,36 @@
+# Simple CI Pipeline for DeFi Court
+name: Test My Code
+
+# When should this run?
+on:
+  push:                    # Every time you push code
+    branches: [ main ]     # Only on main branch
+  pull_request:           # When someone creates a PR
+    branches: [ main ]
+
+# What should it do?
+jobs:
+  test:
+    name: Run Tests
+    runs-on: ubuntu-latest  # Use a Linux computer in the cloud
+    
+    steps:
+    # Step 1: Get your code
+    - name: Get the code
+      uses: actions/checkout@v4
+      
+    # Step 2: Install Node.js
+    - name: Setup Node.js
+      uses: actions/setup-node@v4
+      with:
+        node-version: '20'
+        
+    # Step 3: Go to frontend folder and install packages
+    - name: Install packages
+      working-directory: ./frontend
+      run: npm install
+      
+    # Step 4: Run your tests
+    - name: Run tests
+      working-directory: ./frontend
+      run: npm test -- --watchAll=false
