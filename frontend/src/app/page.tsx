@@ -19,8 +19,9 @@ export default function Page() {
             Decentralized Dispute Resolution
           </h2>
           <p className="text-xl text-gray-400 mb-8 max-w-2xl mx-auto">
-            A fair, transparent, and decentralized court system for DeFi disputes. 
-            Stake tokens, vote on cases, and earn rewards for honest arbitration.
+            A fair, transparent, and decentralized court system for DeFi
+            disputes. Stake tokens, vote on cases, and earn rewards for honest
+            arbitration.
           </p>
           <div className="flex gap-4 justify-center">
             <button className="bg-blue-600 hover:bg-blue-700 px-6 py-3 rounded-lg font-medium transition-colors">
@@ -39,7 +40,8 @@ export default function Page() {
             <div className="text-2xl mb-3">📋</div>
             <h3 className="text-xl font-semibold mb-2">File Disputes</h3>
             <p className="text-gray-400">
-              Submit evidence of DeFi transaction issues with on-chain proofs and documentation.
+              Submit evidence of DeFi transaction issues with on-chain proofs
+              and documentation.
             </p>
           </div>
 
@@ -48,7 +50,8 @@ export default function Page() {
             <div className="text-2xl mb-3">🗳️</div>
             <h3 className="text-xl font-semibold mb-2">Stake & Vote</h3>
             <p className="text-gray-400">
-              Jurors stake tokens and vote on disputes based on evidence and merit.
+              Jurors stake tokens and vote on disputes based on evidence and
+              merit.
             </p>
           </div>
 
@@ -57,7 +60,8 @@ export default function Page() {
             <div className="text-2xl mb-3">💰</div>
             <h3 className="text-xl font-semibold mb-2">Earn Rewards</h3>
             <p className="text-gray-400">
-              Honest jurors earn rewards while dishonest votes are slashed through game theory.
+              Honest jurors earn rewards while dishonest votes are slashed
+              through game theory.
             </p>
           </div>
         </div>
@@ -83,5 +87,5 @@ export default function Page() {
         </div>
       </main>
     </div>
-  );
+  )
 }

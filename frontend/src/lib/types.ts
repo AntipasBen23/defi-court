@@ -60,10 +60,10 @@ export interface JurorStake {
 // Enums
 export enum DisputeStatus {
   OPEN = 'open',
-  VOTING = 'voting', 
+  VOTING = 'voting',
   RESOLVED = 'resolved',
   EXECUTED = 'executed',
-  CANCELLED = 'cancelled'
+  CANCELLED = 'cancelled',
 }
 
 export enum DisputeCategory {
@@ -72,13 +72,13 @@ export enum DisputeCategory {
   TOKEN_SWAP = 'token_swap',
   LENDING = 'lending',
   YIELD_FARMING = 'yield_farming',
-  OTHER = 'other'
+  OTHER = 'other',
 }
 
 export enum VoteDecision {
   PLAINTIFF = 'plaintiff',
   DEFENDANT = 'defendant',
-  ABSTAIN = 'abstain'
+  ABSTAIN = 'abstain',
 }
 
 // Form types

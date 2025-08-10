@@ -51,17 +51,17 @@ export function formatCurrency(amount: number, currency = 'USD'): string {
  */
 export function formatTokenAmount(amount: number): string {
   if (amount === 0) return '0'
-  
+
   // For very small amounts, show more decimals
   if (amount < 0.01) {
     return amount.toFixed(6)
   }
-  
+
   // For normal amounts, show 2-4 decimals
   if (amount < 1000) {
     return amount.toFixed(4)
   }
-  
+
   // For large amounts, use K/M notation
   return formatNumber(amount)
 }
@@ -95,13 +95,13 @@ export function timeAgo(timestamp: number): string {
 export function formatCountdown(endTime: number): string {
   const now = Date.now()
   const diff = endTime - now
-  
+
   if (diff <= 0) return 'Ended'
-  
+
   const days = Math.floor(diff / (1000 * 60 * 60 * 24))
   const hours = Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60))
   const minutes = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60))
-  
+
   if (days > 0) {
     return `${days}d ${hours}h ${minutes}m`
   }
@@ -181,8 +181,11 @@ export function getDisputeStatusColor(status: string): string {
 /**
  * Calculate voting deadline
  */
-export function calculateVotingDeadline(createdAt: number, votingPeriod: number): number {
-  return createdAt + (votingPeriod * 24 * 60 * 60 * 1000) // votingPeriod in days
+export function calculateVotingDeadline(
+  createdAt: number,
+  votingPeriod: number
+): number {
+  return createdAt + votingPeriod * 24 * 60 * 60 * 1000 // votingPeriod in days
 }
 
 /**

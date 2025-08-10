@@ -2,16 +2,23 @@ import type { Metadata, Viewport } from 'next'
 import { Inter } from 'next/font/google'
 import './globals.css'
 
-const inter = Inter({ 
+const inter = Inter({
   subsets: ['latin'],
   display: 'swap',
-  fallback: ['system-ui', 'arial']
+  fallback: ['system-ui', 'arial'],
 })
 
 export const metadata: Metadata = {
   title: 'DeFi Court - Decentralized Dispute Resolution',
-  description: 'A decentralized dispute resolution protocol for DeFi transactions with stake-weighted jurors and on-chain governance.',
-  keywords: ['DeFi', 'dispute resolution', 'arbitration', 'blockchain', 'decentralized court'],
+  description:
+    'A decentralized dispute resolution protocol for DeFi transactions with stake-weighted jurors and on-chain governance.',
+  keywords: [
+    'DeFi',
+    'dispute resolution',
+    'arbitration',
+    'blockchain',
+    'decentralized court',
+  ],
   authors: [{ name: 'DeFi Court Team' }],
   openGraph: {
     title: 'DeFi Court - Decentralized Dispute Resolution',
