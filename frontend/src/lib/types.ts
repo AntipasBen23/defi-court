@@ -122,7 +122,7 @@ export interface PaginatedResponse<T> {
 // Contract interaction types
 export interface ContractConfig {
   address: string
-  abi: any[]
+  abi: unknown[]
   networkId: number
 }
 

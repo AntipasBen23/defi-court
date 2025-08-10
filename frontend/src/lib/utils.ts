@@ -49,7 +49,7 @@ export function formatCurrency(amount: number, currency = 'USD'): string {
 /**
  * Format token amounts with appropriate decimal places
  */
-export function formatTokenAmount(amount: number, decimals = 18): string {
+export function formatTokenAmount(amount: number): string {
   if (amount === 0) return '0'
   
   // For very small amounts, show more decimals
@@ -134,7 +134,7 @@ export function generateId(): string {
 /**
  * Debounce function for search inputs
  */
-export function debounce<T extends (...args: any[]) => any>(
+export function debounce<T extends (...args: unknown[]) => unknown>(
   func: T,
   wait: number
 ): (...args: Parameters<T>) => void {
