@@ -6,7 +6,7 @@ import { renderHook, act } from '@testing-library/react'
 describe('Toast Components', () => {
   describe('ToastContainer', () => {
     const mockOnClose = jest.fn()
-    
+
     beforeEach(() => {
       jest.clearAllMocks()
     })
@@ -17,37 +17,42 @@ describe('Toast Components', () => {
           id: '1',
           title: 'Success',
           message: 'Operation completed',
-          type: 'success' as const
+          type: 'success' as const,
         },
         {
-          id: '2', 
+          id: '2',
           title: 'Error',
-          type: 'error' as const
-        }
+          type: 'error' as const,
+        },
       ]
 
       render(<ToastContainer toasts={toasts} onClose={mockOnClose} />)
-      
+
       expect(screen.getByText('Success')).toBeInTheDocument()
       expect(screen.getByText('Operation completed')).toBeInTheDocument()
       expect(screen.getByText('Error')).toBeInTheDocument()
     })
 
-    it('calls onClose when close button is clicked', () => {
+    it('calls onClose when close button is clicked', async () => {
       const toasts = [
         {
           id: '1',
           title: 'Test Toast',
-          type: 'info' as const
-        }
+          type: 'info' as const,
+        },
       ]
 
       render(<ToastContainer toasts={toasts} onClose={mockOnClose} />)
-      
+
       const closeButton = screen.getByRole('button')
       fireEvent.click(closeButton)
-      
-      expect(mockOnClose).toHaveBeenCalledWith('1')
+
+      await waitFor(
+        () => {
+          expect(mockOnClose).toHaveBeenCalledWith('1')
+        },
+        { timeout: 500 }
+      )
     })
 
     it('renders different toast types with correct styling', () => {
@@ -55,11 +60,13 @@ describe('Toast Components', () => {
         { id: '1', title: 'Success', type: 'success' as const },
         { id: '2', title: 'Error', type: 'error' as const },
         { id: '3', title: 'Warning', type: 'warning' as const },
-        { id: '4', title: 'Info', type: 'info' as const }
+        { id: '4', title: 'Info', type: 'info' as const },
       ]
 
-      const { container } = render(<ToastContainer toasts={toasts} onClose={mockOnClose} />)
-      
+      const { container } = render(
+        <ToastContainer toasts={toasts} onClose={mockOnClose} />
+      )
+
       expect(container.querySelector('.bg-green-600')).toBeInTheDocument()
       expect(container.querySelector('.bg-red-600')).toBeInTheDocument()
       expect(container.querySelector('.bg-yellow-600')).toBeInTheDocument()
@@ -72,15 +79,18 @@ describe('Toast Components', () => {
           id: '1',
           title: 'Auto dismiss',
           type: 'info' as const,
-          duration: 100
-        }
+          duration: 100,
+        },
       ]
 
       render(<ToastContainer toasts={toasts} onClose={mockOnClose} />)
-      
-      await waitFor(() => {
-        expect(mockOnClose).toHaveBeenCalledWith('1')
-      }, { timeout: 500 })
+
+      await waitFor(
+        () => {
+          expect(mockOnClose).toHaveBeenCalledWith('1')
+        },
+        { timeout: 500 }
+      )
     })
   })
 
@@ -93,7 +103,7 @@ describe('Toast Components', () => {
       act(() => {
         result.current.addToast({
           title: 'Test Toast',
-          type: 'success'
+          type: 'success',
         })
       })
 
@@ -135,9 +145,9 @@ describe('Toast Components', () => {
         result.current.addToast({ title: 'Toast 2', type: 'info' })
       })
 
-      const ids = result.current.toasts.map(toast => toast.id)
+      const ids = result.current.toasts.map((toast) => toast.id)
       expect(ids[0]).not.toBe(ids[1])
-      expect(ids.every(id => typeof id === 'string')).toBe(true)
+      expect(ids.every((id) => typeof id === 'string')).toBe(true)
     })
 
     it('clears all toasts', () => {
@@ -188,7 +198,7 @@ describe('Toast Components', () => {
 
       act(() => {
         result.current.success('Success')
-        result.current.error('Error') 
+        result.current.error('Error')
         result.current.warning('Warning')
         result.current.info('Info')
       })
