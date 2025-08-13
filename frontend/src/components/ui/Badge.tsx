@@ -21,13 +21,13 @@ const Badge: React.FC<BadgeProps> = ({
     warning: 'bg-yellow-600 text-yellow-100',
     danger: 'bg-red-600 text-red-100',
     info: 'bg-blue-600 text-blue-100',
-    outline: 'border border-gray-400 text-gray-300 bg-transparent'
+    outline: 'border border-gray-400 text-gray-300 bg-transparent',
   }
 
   const sizes = {
     sm: 'px-2 py-0.5 text-xs',
     md: 'px-2.5 py-0.5 text-sm',
-    lg: 'px-3 py-1 text-base'
+    lg: 'px-3 py-1 text-base',
   }
 
   return (
@@ -40,9 +40,7 @@ const Badge: React.FC<BadgeProps> = ({
       )}
       {...props}
     >
-      {dot && (
-        <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />
-      )}
+      {dot && <span className="w-1.5 h-1.5 rounded-full bg-current mr-1.5" />}
       {children}
     </span>
   )
@@ -61,10 +59,12 @@ export const StatusBadge: React.FC<{
     cancelled: { variant: 'danger' as const, label: 'Cancelled' },
     pending: { variant: 'warning' as const, label: 'Pending' },
     active: { variant: 'info' as const, label: 'Active' },
-    inactive: { variant: 'default' as const, label: 'Inactive' }
+    inactive: { variant: 'default' as const, label: 'Inactive' },
   }
 
-  const config = statusConfig[status.toLowerCase() as keyof typeof statusConfig] || statusConfig.pending
+  const config =
+    statusConfig[status.toLowerCase() as keyof typeof statusConfig] ||
+    statusConfig.pending
 
   return (
     <Badge variant={config.variant} className={className} dot>
@@ -83,10 +83,11 @@ export const CategoryBadge: React.FC<{
     token_swap: 'Token Swap',
     lending: 'Lending',
     yield_farming: 'Yield Farming',
-    other: 'Other'
+    other: 'Other',
   }
 
-  const label = categoryLabels[category as keyof typeof categoryLabels] || category
+  const label =
+    categoryLabels[category as keyof typeof categoryLabels] || category
 
   return (
     <Badge variant="outline" size="sm" className={className}>
@@ -103,7 +104,7 @@ export const PriorityBadge: React.FC<{
     low: { variant: 'default' as const, label: 'Low' },
     medium: { variant: 'info' as const, label: 'Medium' },
     high: { variant: 'warning' as const, label: 'High' },
-    critical: { variant: 'danger' as const, label: 'Critical' }
+    critical: { variant: 'danger' as const, label: 'Critical' },
   }
 
   const config = priorityConfig[priority]

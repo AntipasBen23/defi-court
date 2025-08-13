@@ -1,10 +1,24 @@
 import { useState, useEffect, useCallback } from 'react'
 import { WalletState } from '@/lib/types'
-import { SUPPORTED_NETWORKS, DEFAULT_NETWORK, ERROR_MESSAGES } from '@/lib/constants'
+import {
+  SUPPORTED_NETWORKS,
+  DEFAULT_NETWORK,
+  ERROR_MESSAGES,
+} from '@/lib/constants'
 
 declare global {
   interface Window {
-    ethereum?: any
+    ethereum?: {
+      request: (args: {
+        method: string
+        params?: unknown[]
+      }) => Promise<unknown>
+      on: (event: string, callback: (...args: unknown[]) => void) => void
+      removeListener: (
+        event: string,
+        callback: (...args: unknown[]) => void
+      ) => void
+    }
   }
 }
 
@@ -14,9 +28,9 @@ export const useWallet = () => {
     address: undefined,
     chainId: undefined,
     balance: undefined,
-    isCorrectNetwork: false
+    isCorrectNetwork: false,
   })
-  
+
   const [isConnecting, setIsConnecting] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
@@ -26,14 +40,17 @@ export const useWallet = () => {
   }, [])
 
   // Get current account
-  const getCurrentAccount = useCallback(async () => {
-    if (!isWalletInstalled()) return null
+  const getCurrentAccount = useCallback(async (): Promise<string | null> => {
+    if (!isWalletInstalled() || !window.ethereum) return null
 
     try {
       const accounts = await window.ethereum.request({
-        method: 'eth_accounts'
+        method: 'eth_accounts',
       })
-      return accounts[0] || null
+      const accountsArray = Array.isArray(accounts)
+        ? (accounts as string[])
+        : []
+      return accountsArray[0] || null
     } catch (err) {
       console.error('Error getting accounts:', err)
       return null
@@ -42,13 +59,14 @@ export const useWallet = () => {
 
   // Get network ID
   const getNetworkId = useCallback(async (): Promise<number | undefined> => {
-    if (!isWalletInstalled()) return undefined
+    if (!isWalletInstalled() || !window.ethereum) return undefined
 
     try {
       const chainId = await window.ethereum.request({
-        method: 'eth_chainId'
+        method: 'eth_chainId',
       })
-      return parseInt(chainId, 16)
+      const chainIdStr = typeof chainId === 'string' ? chainId : String(chainId)
+      return parseInt(chainIdStr, 16)
     } catch (err) {
       console.error('Error getting network:', err)
       return undefined
@@ -56,27 +74,37 @@ export const useWallet = () => {
   }, [isWalletInstalled])
 
   // Get balance
-  const getBalance = useCallback(async (address: string) => {
-    if (!isWalletInstalled() || !address) return '0'
+  const getBalance = useCallback(
+    async (address: string): Promise<string> => {
+      if (!isWalletInstalled() || !address || !window.ethereum) return '0'
 
-    try {
-      const balance = await window.ethereum.request({
-        method: 'eth_getBalance',
-        params: [address, 'latest']
-      })
-      // Convert from wei to ether (simplified)
-      const balanceInEth = parseInt(balance, 16) / Math.pow(10, 18)
-      return balanceInEth.toFixed(4)
-    } catch (err) {
-      console.error('Error getting balance:', err)
-      return '0'
-    }
-  }, [isWalletInstalled])
+      try {
+        const balance = await window.ethereum.request({
+          method: 'eth_getBalance',
+          params: [address, 'latest'],
+        })
+        const balanceStr =
+          typeof balance === 'string' ? balance : String(balance)
+        // Convert from wei to ether (simplified)
+        const balanceInEth = parseInt(balanceStr, 16) / Math.pow(10, 18)
+        return balanceInEth.toFixed(4)
+      } catch (err) {
+        console.error('Error getting balance:', err)
+        return '0'
+      }
+    },
+    [isWalletInstalled]
+  )
 
   // Connect wallet
-  const connect = useCallback(async () => {
+  const connect = useCallback(async (): Promise<boolean> => {
     if (!isWalletInstalled()) {
       setError('MetaMask is not installed')
+      return false
+    }
+
+    if (!window.ethereum) {
+      setError('Ethereum provider not found')
       return false
     }
 
@@ -85,15 +113,19 @@ export const useWallet = () => {
 
     try {
       const accounts = await window.ethereum.request({
-        method: 'eth_requestAccounts'
+        method: 'eth_requestAccounts',
       })
 
-      if (accounts.length === 0) {
+      const accountsArray = Array.isArray(accounts)
+        ? (accounts as string[])
+        : []
+
+      if (accountsArray.length === 0) {
         setError('No accounts found')
         return false
       }
 
-      const address = accounts[0]
+      const address = accountsArray[0]
       const chainId = await getNetworkId()
       const balance = await getBalance(address)
       const isCorrectNetwork = chainId === DEFAULT_NETWORK
@@ -103,12 +135,14 @@ export const useWallet = () => {
         address,
         chainId,
         balance,
-        isCorrectNetwork
+        isCorrectNetwork,
       })
 
       return true
-    } catch (err: any) {
-      setError(err.message || ERROR_MESSAGES.WALLET_NOT_CONNECTED)
+    } catch (err: unknown) {
+      const errorMessage =
+        err instanceof Error ? err.message : ERROR_MESSAGES.WALLET_NOT_CONNECTED
+      setError(errorMessage)
       return false
     } finally {
       setIsConnecting(false)
@@ -122,35 +156,40 @@ export const useWallet = () => {
       address: undefined,
       chainId: undefined,
       balance: undefined,
-      isCorrectNetwork: false
+      isCorrectNetwork: false,
     })
     setError(null)
   }, [])
 
   // Switch network
-  const switchNetwork = useCallback(async (networkId: number) => {
-    if (!isWalletInstalled()) return false
+  const switchNetwork = useCallback(
+    async (networkId: number): Promise<boolean> => {
+      if (!isWalletInstalled() || !window.ethereum) return false
 
-    try {
-      await window.ethereum.request({
-        method: 'wallet_switchEthereumChain',
-        params: [{ chainId: `0x${networkId.toString(16)}` }]
-      })
-      return true
-    } catch (err: any) {
-      if (err.code === 4902) {
-        setError('Network not added to wallet')
-      } else {
-        setError(err.message || ERROR_MESSAGES.NETWORK_ERROR)
+      try {
+        await window.ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: `0x${networkId.toString(16)}` }],
+        })
+        return true
+      } catch (err: unknown) {
+        if (err instanceof Error && 'code' in err && err.code === 4902) {
+          setError('Network not added to wallet')
+        } else {
+          const errorMessage =
+            err instanceof Error ? err.message : ERROR_MESSAGES.NETWORK_ERROR
+          setError(errorMessage)
+        }
+        return false
       }
-      return false
-    }
-  }, [isWalletInstalled])
+    },
+    [isWalletInstalled]
+  )
 
   // Update wallet state
   const updateWalletState = useCallback(async () => {
     const address = await getCurrentAccount()
-    
+
     if (!address) {
       disconnect()
       return
@@ -158,22 +197,25 @@ export const useWallet = () => {
 
     const chainId = await getNetworkId()
     const balance = await getBalance(address)
-    const isCorrectNetwork = chainId ? (Object.values(SUPPORTED_NETWORKS) as number[]).includes(chainId) : false
+    const isCorrectNetwork = chainId
+      ? (Object.values(SUPPORTED_NETWORKS) as number[]).includes(chainId)
+      : false
 
     setWallet({
       isConnected: true,
       address,
       chainId,
       balance,
-      isCorrectNetwork
+      isCorrectNetwork,
     })
   }, [getCurrentAccount, getNetworkId, getBalance, disconnect])
 
   // Setup event listeners
   useEffect(() => {
-    if (!isWalletInstalled()) return
+    if (!isWalletInstalled() || !window.ethereum) return
 
-    const handleAccountsChanged = (accounts: string[]) => {
+    const handleAccountsChanged = (...args: unknown[]) => {
+      const accounts = Array.isArray(args[0]) ? (args[0] as string[]) : []
       if (accounts.length === 0) {
         disconnect()
       } else {
@@ -207,6 +249,6 @@ export const useWallet = () => {
     connect,
     disconnect,
     switchNetwork,
-    clearError: () => setError(null)
+    clearError: () => setError(null),
   }
 }
